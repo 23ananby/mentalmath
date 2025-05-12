@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aritmética Mental</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="app-header">
+        <h1>Aritmética Mental 🧠⚡</h1>
+    </header>
+
+    <nav class="modes-nav">
+        <ul>
+            <li class="active">Aritmética</li>
+            <li class="disabled">Memoria</li>
+            <li class="disabled">Porcentaje</li>
+            <li class="selected">Medio</li>
+        </ul>
+    </nav>
+
+    <main class="arithmetic-container">
+        <div class="numbers-section">
+            <div class="number-block">
+                <p class="sub-label" id="number-digits-1">6 Dígitos</p>
+                <div class="number" id="number-one">409,251</div>
+            </div>
+            <div class="number-block">
+                <p class="sub-label" id="number-digits-2">6 Dígitos</p>
+                <div class="number" id="number-two">882,471</div>
+            </div>
+        </div>
+
+        <div class="operation-separator">
+            <div class="line"></div>
+            <div class="operator-circle" id="operation-symbol">+</div>
+        </div>
+
+        <div class="answer-section">
+            <p class="label">Respuesta</p>
+            <p class="sub-label disabled" id="answer-status">Confirmación</p>
+            <div class="result" id="user-answer">1,291,722</div>
+        </div>
+
+        <div class="numpad" id="numpad">
+            <button data-value="1">1</button>
+            <button data-value="2">2</button>
+            <button data-value="3">3</button>
+            <button data-value="4">4</button>
+            <button data-value="5">5</button>
+            <button data-value="6">6</button>
+            <button data-value="7">7</button>
+            <button data-value="8">8</button>
+            <button data-value="9">9</button>
+            <button data-value="0" class="zero">0</button>
+            <button data-value="backspace" class="backspace">←</button>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <p>Copyright © 2025</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
