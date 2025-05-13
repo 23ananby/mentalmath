@@ -13,14 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
     let operation;
     let correctAnswer;
     let userInput = '';
+    let difficultyLevel = 1; // Nivel de dificultad inicial
+    const maxDifficulty = 5; // Máximo nivel de dificultad
+    let correctStreak = 0; // Racha de respuestas correctas
+    const streakThreshold = 3; // Umbral para ajustar dificultad
 
     const numberRanges = [
         { min: 10, max: 99 },
         { min: 100, max: 999 },
         { min: 1000, max: 9999 },
         { min: 10000, max: 99999 },
-        { min: 100000, max: 999999 },
-        { min: 1000000, max: 1000000 }
+        { min: 100000, max: 999999 }
     ];
 
     function generateRandomNumberInRange(min, max) {
@@ -37,8 +40,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function generateProblem() {
-        const rangeIndex1 = Math.floor(Math.random() * numberRanges.length);
-        const rangeIndex2 = Math.floor(Math.random() * numberRanges.length);
+        let rangeIndex1, rangeIndex2;
+
+        // Ajustar rangos según el nivel de dificultad
+        switch (difficultyLevel) {
+            case 1:
+                rangeIndex1 = 0; // 10-99
+                rangeIndex2 = 0; // 10-99
+                break;
+            case 2:
+                rangeIndex1 = 1; // 100-999
+                rangeIndex2 = 1; // 100-999
+                break;
+            case 3:
+                rangeIndex1 = 2; // 1000-9999
+                rangeIndex2 = 2; // 1000-9999
+                break;
+            case 4:
+                rangeIndex1 = 3; // 10000-99999
+                rangeIndex2 = 3; // 10000-99999
+                break;
+            case 5:
+                rangeIndex1 = 4; // 100000-999999
+                rangeIndex2 = 4; // 100000-999999
+                break;
+            default:
+                rangeIndex1 = 0;
+                rangeIndex2 = 0;
+        }
 
         const range1 = numberRanges[rangeIndex1];
         const range2 = numberRanges[rangeIndex2];
@@ -50,20 +79,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (operation === '-') {
             if (numberOne < numberTwo) {
-               [numberOne, numberTwo] = [numberTwo, numberOne];
+                [numberOne, numberTwo] = [numberTwo, numberOne];
             }
             correctAnswer = numberOne - numberTwo;
-        } else {
+        } else if (operation === '+') {
             correctAnswer = numberOne + numberTwo;
+        } else if (operation === '*') {
+            // Ajustar rangos para multiplicación según dificultad
+            numberOne = generateRandomNumberInRange(1, 10 * difficultyLevel);
+            numberTwo = generateRandomNumberInRange(1, 10 * difficultyLevel);
+            correctAnswer = numberOne * numberTwo;
+        } else if (operation === '/') {
+            // Asegurar división exacta
+            numberTwo = generateRandomNumberInRange(1, 10 * difficultyLevel);
+            numberOne = numberTwo * generateRandomNumberInRange(1, 10 * difficultyLevel);
+            correctAnswer = numberOne / numberTwo;
         }
 
         userInput = '';
-
         updateUI();
     }
 
     function generateOperation() {
-        return Math.random() < 0.5 ? '+' : '-';
+        const operations = ['+', '-', '*', '/'];
+        return operations[Math.floor(Math.random() * operations.length)];
     }
 
     function updateUI() {
@@ -86,11 +125,13 @@ document.addEventListener('DOMContentLoaded', () => {
             answerStatusEl.textContent = 'Confirmación';
             answerStatusEl.style.color = '#888';
         } else {
-             if (Number(userInput) !== correctAnswer) {
-                 answerStatusEl.textContent = 'Incorrecto';
-                 answerStatusEl.style.color = '#fff';
-             } else {
-             }
+            if (Number(userInput) !== correctAnswer) {
+                answerStatusEl.textContent = 'Incorrecto';
+                answerStatusEl.style.color = '#fff';
+            } else {
+                answerStatusEl.textContent = 'Correcto';
+                answerStatusEl.style.color = '#ffcc00';
+            }
         }
     }
 
@@ -104,15 +145,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     userInput = userInput.slice(0, -1);
                 }
             } else {
-                 if (userInput.length < 8) {
+                if (userInput.length < 8) {
                     userInput += value;
-                 }
+                }
             }
 
             updateUI();
 
             if (userInput !== '' && Number(userInput) === correctAnswer) {
+                correctStreak++;
+                if (correctStreak >= streakThreshold && difficultyLevel < maxDifficulty) {
+                    difficultyLevel++;
+                    correctStreak = 0;
+                }
                 generateProblem();
+            } else if (userInput !== '' && Number(userInput) !== correctAnswer) {
+                correctStreak = 0;
+                if (difficultyLevel > 1) {
+                    difficultyLevel--; // Reducir dificultad tras fallo
+                }
             }
         }
     }
