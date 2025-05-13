@@ -15,21 +15,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let userInput = '';
 
     function generateRandomNumber() {
-        
-
         const digitCount = Math.floor(Math.random() * 10) + 1;
         let number = 0;
-        
 
         for (let i = 0; i < digitCount; i++) {
             const digit = Math.floor(Math.random() * 10);
-            number = number * 10 + digit;
+             if (i === 0 && digit === 0 && digitCount > 1 && Math.floor(Math.random() * 10) < 5) {
+                i--;
+            } else {
+                 number = number * 10 + digit;
+            }
         }
         return number;
     }
 
     function formatNumberWithCommas(number) {
-        return String(number).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+         const parts = String(number).split('.');
+         const integerPart = parts[0];
+         const decimalPart = parts[1];
+         const integerWithCommas = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+         return decimalPart ? integerWithCommas + '.' + decimalPart : integerWithCommas;
     }
 
     function getDigitCount(number) {
@@ -60,24 +65,33 @@ document.addEventListener('DOMContentLoaded', () => {
         numberDigits1El.textContent = `${getDigitCount(numberOne)} Dígitos`;
         numberDigits2El.textContent = `${getDigitCount(numberTwo)} Dígitos`;
 
-        if (userInput === '') {
-            userAnswerEl.textContent = '0';
-            userAnswerEl.classList.add('placeholder');
+        if (userInput === '' || userInput === '-') {
+             userAnswerEl.textContent = userInput === '-' ? '-' : '0';
+             userAnswerEl.classList.add('placeholder');
+             answerStatusEl.textContent = 'Confirmación';
+             answerStatusEl.style.color = '#888';
         } else {
-            userAnswerEl.textContent = formatNumberWithCommas(Number(userInput));
-            userAnswerEl.classList.remove('placeholder');
-        }
+             const numericInput = Number(userInput);
+             if (!isNaN(numericInput)) {
+                userAnswerEl.textContent = formatNumberWithCommas(numericInput);
+                userAnswerEl.classList.remove('placeholder');
 
-        if (userInput === '') {
-            answerStatusEl.textContent = 'Confirmación';
-            answerStatusEl.style.color = '#888';
-        } else {
-            if (Number(userInput) !== correctAnswer) {
-                answerStatusEl.textContent = 'Incorrecto';
-                answerStatusEl.style.color = '#fff';
-            } else {
-                answerStatusEl.textContent = '';
-            }
+                if (numericInput !== correctAnswer) {
+                    answerStatusEl.textContent = 'Incorrecto';
+                    answerStatusEl.style.color = '#fff';
+                } else {
+                    answerStatusEl.textContent = '';
+                }
+             } else {
+                 userAnswerEl.textContent = userInput;
+                 userAnswerEl.classList.remove('placeholder');
+                 answerStatusEl.textContent = 'Entrada inválida';
+                 answerStatusEl.style.color = 'red';
+             }
+        }
+        if (userInput === '' || userInput === '-') {
+             answerStatusEl.textContent = 'Confirmación';
+             answerStatusEl.style.color = '#888';
         }
     }
 
@@ -90,16 +104,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (userInput.length > 0) {
                     userInput = userInput.slice(0, -1);
                 }
-            } else {
-                if (userInput.length < 10) {
-                    userInput += value;
+            } else if (value === '-') {
+                if (userInput === '') {
+                    userInput = '-';
                 }
+            } else {
+                 const currentLength = userInput.startsWith('-') ? userInput.length - 1 : userInput.length;
+                 if (currentLength < 10) {
+                     if (userInput === '-' && value === '0') {
+                        return;
+                     }
+                     userInput += value;
+                 }
             }
 
             updateUI();
 
-            if (userInput !== '' && Number(userInput) === correctAnswer) {
+            const numericInput = Number(userInput);
+            if (userInput !== '' && userInput !== '-' && !isNaN(numericInput) && numericInput === correctAnswer) {
                 generateProblem();
+            } else if (userInput !== '' && userInput !== '-' && !isNaN(numericInput) && numericInput !== correctAnswer) {
+                 answerStatusEl.textContent = 'Incorrecto';
+                 answerStatusEl.style.color = '#fff';
             }
         }
     }
