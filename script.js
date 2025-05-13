@@ -15,10 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let userInput = '';
 
     function generateRandomNumber() {
-        // Generar una longitud aleatoria de dígitos entre 1 y 10
+        
+
         const digitCount = Math.floor(Math.random() * 10) + 1;
         let number = 0;
-        // Generar cada dígito de forma aleatoria
+        
+
         for (let i = 0; i < digitCount; i++) {
             const digit = Math.floor(Math.random() * 10);
             number = number * 10 + digit;
